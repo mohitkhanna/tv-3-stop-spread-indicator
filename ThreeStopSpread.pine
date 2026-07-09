@@ -6,52 +6,106 @@ indicator("TradingView 3-Stop Spread Indicator", overlay=true, max_labels_count=
 // ==========================================
 // Group: Trade Settings
 G_TRADE = "Trade Configuration"
-tradeDirection   = input.string("Long", "Trade Direction", options=["Long", "Short"], group=G_TRADE)
-useManualDate    = input.bool(false, "Use Manual Entry Date (false = current day)", group=G_TRADE)
-entryTime        = input.time(timestamp("2026-07-09 09:30"), "Manual Entry Date & Time", group=G_TRADE)
-entryPriceSource = input.string("Close", "Entry Price Source", options=["Close", "Open", "Breakout (High / Low)", "Pullback (Low / High)"], group=G_TRADE)
-manualEntryPrice = input.float(0.0, "Manual Entry Price (0 = Auto)", minval=0.0, group=G_TRADE)
-stopPriceSource  = input.string("Day Low / High", "Stop Price Source", options=["Day Low / High", "Entry Bar Low / High", "Previous Bar Low / High", "Swing Low / High", "Moving Average"], group=G_TRADE)
-manualStopPrice  = input.float(0.0, "Manual Stop Price (0 = Auto)", minval=0.0, group=G_TRADE)
-positionSize     = input.float(3.0, "Position Size (Shares)", minval=0.0, group=G_TRADE)
+tradeDirection   = input.string("Long", "Direction", options=["Long", "Short"], group=G_TRADE, inline="Trade Info")
+positionSize     = input.float(3.0, "Size (Shares)", minval=0.0, group=G_TRADE, inline="Trade Info")
+entryTime        = input.time(timestamp("1970-01-01 00:00"), "Manual Entry Date & Time (0 = Auto)", group=G_TRADE)
+entryPriceSource = input.string("Close", "Entry Price Source", options=["Close", "Open", "Breakout (High / Low)", "Pullback (Low / High)"], group=G_TRADE, inline="Entry Price")
+manualEntryPrice = input.float(0.0, "Manual Override", minval=0.0, group=G_TRADE, inline="Entry Price")
+stopPriceSource  = input.string("Day Low / High", "Stop Price Source", options=["Day Low / High", "Entry Bar Low / High", "Previous Bar Low / High", "Swing Low / High", "Moving Average"], group=G_TRADE, inline="Stop Price")
+manualStopPrice  = input.float(0.0, "Manual Override", minval=0.0, group=G_TRADE, inline="Stop Price")
+allowFractional  = input.bool(false, "Allow Fractional Shares", group=G_TRADE)
 
-// Group: Technical Parameters
-G_MA             = "Technical Parameters"
-maType           = input.string("SMA", "MA Type", options=["SMA", "EMA"], group=G_MA)
-maLength         = input.int(20, "MA Length", minval=1, group=G_MA)
+// Group: Moving Average and Swing Config
+G_MA             = "Moving Average and Swing Config"
+maType           = input.string("SMA", "MA Type", options=["SMA", "EMA"], group=G_MA, inline="MA Config")
+maLength         = input.int(20, "MA Length", minval=1, group=G_MA, inline="MA Config")
 swingLength      = input.int(10, "Swing Length", minval=1, group=G_MA)
 
-// Group: Sizing and Rounding
-G_ROUND = "Sizing and Rounding"
-allowFractional  = input.bool(false, "Allow Fractional Shares", group=G_ROUND)
-
-// Group: Aesthetics & UI
-G_UI = "Aesthetics & UI"
+// Group: Dashboard & UI
+G_UI = "Dashboard & UI"
 showDashboard    = input.bool(true, "Show Dashboard Table", group=G_UI)
-dashboardPosStr  = input.string("Bottom Left", "Dashboard Position", options=["Top Left", "Top Center", "Top Right", "Middle Left", "Middle Center", "Middle Right", "Bottom Left", "Bottom Center", "Bottom Right"], group=G_UI)
-tableTextSizeStr = input.string("Normal", "Table Text Size", options=["Auto", "Tiny", "Small", "Normal", "Large", "Huge"], group=G_UI)
+dashboardPosStr  = input.string("Bottom Left", "Dashboard Position", options=["Top Left", "Top Center", "Top Right", "Middle Left", "Middle Center", "Middle Right", "Bottom Left", "Bottom Center", "Bottom Right"], group=G_UI, inline="Table Layout")
+tableTextSizeStr = input.string("Normal", "Table Text Size", options=["Auto", "Tiny", "Small", "Normal", "Large", "Huge"], group=G_UI, inline="Table Layout")
+tableTheme       = input.string("Aqua Gold", "Dashboard Theme", options=["Aqua Gold", "Dark Charcoal", "Classic Navy", "Emerald Terminal", "Custom"], group=G_UI)
 
-// Group: Table Styling & Colors (User Specified Palette)
-GP_STYLE          = "Table Styling & Colors"
-color_frame       = input.color(color.new(color.blue, 0), "Frame Color", group=GP_STYLE)
-color_title_bg    = input.color(color.new(color.yellow, 75), "Title Row Color", group=GP_STYLE)
-color_body_bg     = input.color(color.new(color.aqua, 85), "Body Row Color", group=GP_STYLE)
-color_bad_bg      = input.color(color.new(color.red, 40), "Bad Color", group=GP_STYLE)
-
-frame_width       = input.int(2, "Frame Width", group=GP_STYLE)
-color_border      = input.color(#363a45, "Border Color", group=GP_STYLE)
-border_width      = input.int(1, "Border Width", group=GP_STYLE)
-color_text        = input.color(color.black, "Text Color", group=GP_STYLE)
-color_bg          = input.color(color.white, "Background Color", group=GP_STYLE)
+// Custom Theme Colors (Only used if Theme is "Custom")
+custom_text      = input.color(color.black, "Text", group=G_UI, inline="Custom Colors 1")
+custom_bg        = input.color(color.white, "Background", group=G_UI, inline="Custom Colors 1")
+custom_border    = input.color(#363a45, "Border", group=G_UI, inline="Custom Colors 2")
+custom_frame     = input.color(color.new(color.blue, 0), "Frame", group=G_UI, inline="Custom Colors 2")
+custom_title_bg  = input.color(color.new(color.yellow, 75), "Title BG", group=G_UI, inline="Custom Colors 3")
+custom_header_bg = input.color(color.new(color.aqua, 85), "Header BG", group=G_UI, inline="Custom Colors 3")
 
 // Group: Chart Drawings Styling
 G_DRAW            = "Chart Drawings Styling"
-colorEntry        = input.color(color.blue, "Entry Line Color", group=G_DRAW)
-colorStopsStag    = input.color(color.orange, "Staggered Stops Color", group=G_DRAW)
-colorStops        = input.color(color.red, "Final Stop Color", group=G_DRAW)
-lineWidthEntry    = input.int(2, "Entry Line Width", minval=1, group=G_DRAW)
-lineWidthStops    = input.int(2, "Stops Line Width", minval=1, group=G_DRAW)
-labelSpacing      = input.int(1, "Label Spacing (Bars)", minval=0, group=G_DRAW)
+colorEntry        = input.color(color.blue, "Entry Line", group=G_DRAW, inline="Line Colors")
+colorStopsStag    = input.color(color.orange, "Staggered Stops", group=G_DRAW, inline="Line Colors")
+colorStops        = input.color(color.red, "Final Stop", group=G_DRAW, inline="Line Colors")
+lineWidthEntry    = input.int(2, "Entry Line Width", minval=1, group=G_DRAW, inline="Line Widths")
+lineWidthStops    = input.int(2, "Stops Line Width", minval=1, group=G_DRAW, inline="Line Widths")
+labelSpacing      = input.int(1, "Label Spacing (Bars)", minval=0, group=G_DRAW, inline="SpacingStyle")
+lineStyleStr      = input.string("Dotted", "Line Style", options=["Solid", "Dotted", "Dashed"], group=G_DRAW, inline="SpacingStyle")
+
+// Theme Color Resolution
+color txt_color = na
+color border_color = na
+color frame_color = na
+color title_bg_color = na
+color body_bg_color = na
+color bad_bg_color = na
+color bg_color = na
+
+if tableTheme == "Aqua Gold"
+    txt_color      := color.black
+    border_color   := #363a45
+    frame_color    := color.new(color.blue, 0)
+    title_bg_color := color.new(color.yellow, 75)
+    body_bg_color  := color.new(color.aqua, 85)
+    bad_bg_color   := color.new(color.red, 40)
+    bg_color       := color.white
+else if tableTheme == "Dark Charcoal"
+    txt_color      := #d1d4dc
+    border_color   := #363a45
+    frame_color    := #2a2e39
+    title_bg_color := #1e222d
+    body_bg_color  := #131722
+    bad_bg_color   := color.new(#f23645, 40)
+    bg_color       := #131722
+else if tableTheme == "Classic Navy"
+    txt_color      := #ffffff
+    border_color   := #1f3a60
+    frame_color    := #2c4e7e
+    title_bg_color := #1f3a60
+    body_bg_color  := #0c1a30
+    bad_bg_color   := color.new(#f23645, 30)
+    bg_color       := #0c1a30
+else if tableTheme == "Emerald Terminal"
+    txt_color      := #e0e3eb
+    border_color   := #1b4d3e
+    frame_color    := #2a6f5c
+    title_bg_color := #1b4d3e
+    body_bg_color  := #0d1f1a
+    bad_bg_color   := color.new(#f23645, 30)
+    bg_color       := #0d1f1a
+else // "Custom"
+    txt_color      := custom_text
+    border_color   := custom_border
+    frame_color    := custom_frame
+    title_bg_color := custom_title_bg
+    body_bg_color  := custom_header_bg
+    bad_bg_color   := color.new(color.red, 40)
+    bg_color       := custom_bg
+
+// Map back to table variables
+color_text     = txt_color
+color_border   = border_color
+color_frame    = frame_color
+color_title_bg = title_bg_color
+color_body_bg  = body_bg_color
+color_bad_bg   = bad_bg_color
+color_bg       = bg_color
+frame_width    = 2
+border_width   = 1
 
 // ==========================================
 // --- HELPERS & CALCULATION SAFETY ---
@@ -80,8 +134,9 @@ var float stop3Price = na
 
 // Check for entry bar on every bar
 timeD = nz(time("D"), time)
+isAutoMode = (entryTime <= timestamp("1970-01-01 00:00"))
 bool isThisEntry = false
-if useManualDate
+if not isAutoMode
     isThisEntry := (time >= entryTime) and (time[1] < entryTime or na(time[1]))
 else
     isThisEntry := (ta.change(timeD) != 0 or barstate.isfirst)
@@ -256,11 +311,16 @@ if barstate.islast
     linefill.delete(fillStop2Stop3)
     
     if not na(entryBarIdx)
-        // Create new line levels extending from entry day (using + 1 offset to define horizontal direction, style=line.style_dotted)
-        lineEntry := line.new(entryBarIdx, entryPriceVal, entryBarIdx + 1, entryPriceVal, color=colorEntry, width=lineWidthEntry, style=line.style_dotted, extend=extend.right)
-        lineStop1 := line.new(entryBarIdx, stop1Price, entryBarIdx + 1, stop1Price, color=colorStopsStag, width=lineWidthStops, style=line.style_dotted, extend=extend.right)
-        lineStop2 := line.new(entryBarIdx, stop2Price, entryBarIdx + 1, stop2Price, color=colorStopsStag, width=lineWidthStops, style=line.style_dotted, extend=extend.right)
-        lineStop3 := line.new(entryBarIdx, stop3Price, entryBarIdx + 1, stop3Price, color=colorStops, width=lineWidthStops, style=line.style_dotted, extend=extend.right)
+        lineStyle = switch lineStyleStr
+            "Solid"  => line.style_solid
+            "Dashed" => line.style_dashed
+            "Dotted" => line.style_dotted
+            => line.style_dotted
+        // Create new line levels extending from entry day (using + 1 offset to define horizontal direction)
+        lineEntry := line.new(entryBarIdx, entryPriceVal, entryBarIdx + 1, entryPriceVal, color=colorEntry, width=lineWidthEntry, style=lineStyle, extend=extend.right)
+        lineStop1 := line.new(entryBarIdx, stop1Price, entryBarIdx + 1, stop1Price, color=colorStopsStag, width=lineWidthStops, style=lineStyle, extend=extend.right)
+        lineStop2 := line.new(entryBarIdx, stop2Price, entryBarIdx + 1, stop2Price, color=colorStopsStag, width=lineWidthStops, style=lineStyle, extend=extend.right)
+        lineStop3 := line.new(entryBarIdx, stop3Price, entryBarIdx + 1, stop3Price, color=colorStops, width=lineWidthStops, style=lineStyle, extend=extend.right)
         
         // Fill the spaces between the lines (using linefill.new)
         fillEntryStop1 := linefill.new(lineEntry, lineStop1, color.new(colorEntry, 90))
@@ -308,7 +368,8 @@ if showDashboard and barstate.islast
     table.clear(hudTable, 0, 0, 3, 5)
     txtSize = getTableTextSize(tableTextSizeStr)
     if na(entryBarIdx)
-        table.cell(hudTable, 0, 0, "Entry Date not found or in future (" + str.format("{0,date,yyyy-MM-dd}", entryTime) + ")", bgcolor=color_bad_bg, text_color=color.white, text_size=txtSize, text_halign=text.align_center)
+        errorMsg = isAutoMode ? "Entry bar not found (Check ticker history)" : "Entry Date not found or in future (" + str.format("{0,date,yyyy-MM-dd}", entryTime) + ")"
+        table.cell(hudTable, 0, 0, errorMsg, bgcolor=color_bad_bg, text_color=color.white, text_size=txtSize, text_halign=text.align_center)
     else
         // Row 0: Trade Status Summary Bar (using header row background color and bold text)
         tradeDayStr = daysActive == 0 ? "Entry Day" : "Day " + str.tostring(daysActive)
