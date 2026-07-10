@@ -27,7 +27,7 @@ G_UI = "Dashboard & UI Layout"
 showDashboard    = input.bool(true, "Display Dashboard Widget", group=G_UI)
 dashboardPosStr  = input.string("Bottom Left", "Widget Position", options=["Top Left", "Top Center", "Top Right", "Middle Left", "Middle Center", "Middle Right", "Bottom Left", "Bottom Center", "Bottom Right"], group=G_UI)
 tableTextSizeStr = input.string("Normal", "Widget Font Size", options=["Auto", "Tiny", "Small", "Normal", "Large", "Huge"], group=G_UI)
-tableTheme       = input.string("Aqua Gold (Default)", "Dashboard Color Theme", options=["Aqua Gold (Default)", "Dark Charcoal", "Classic Navy", "Emerald Terminal", "Custom Theme"], group=G_UI)
+tableTheme       = input.string("Aqua Gold (Default)", "Dashboard Color Theme", options=["Aqua Gold (Default)", "GitHub Light", "Atom One Light", "One Dark Pro", "Dracula", "Custom Theme"], group=G_UI)
 
 // Custom Theme Colors (Only used if Theme is "Custom Theme")
 custom_text      = input.color(color.black, "Text Color", group=G_UI, inline="Custom 1")
@@ -55,6 +55,9 @@ color title_bg_color = na
 color body_bg_color = na
 color bad_bg_color = na
 color bg_color = na
+color stop1_bg_color = na
+color stop2_bg_color = na
+color stop3_bg_color = na
 
 if tableTheme == "Aqua Gold (Default)" or tableTheme == "Aqua Gold"
     txt_color      := color.black
@@ -64,30 +67,53 @@ if tableTheme == "Aqua Gold (Default)" or tableTheme == "Aqua Gold"
     body_bg_color  := color.new(color.aqua, 85)
     bad_bg_color   := color.new(color.red, 40)
     bg_color       := color.white
-else if tableTheme == "Dark Charcoal"
-    txt_color      := #d1d4dc
-    border_color   := #363a45
-    frame_color    := #2a2e39
-    title_bg_color := #1e222d
-    body_bg_color  := #131722
-    bad_bg_color   := color.new(#f23645, 40)
-    bg_color       := #131722
-else if tableTheme == "Classic Navy"
-    txt_color      := #ffffff
-    border_color   := #1f3a60
-    frame_color    := #2c4e7e
-    title_bg_color := #1f3a60
-    body_bg_color  := #0c1a30
-    bad_bg_color   := color.new(#f23645, 30)
-    bg_color       := #0c1a30
-else if tableTheme == "Emerald Terminal"
-    txt_color      := #e0e3eb
-    border_color   := #1b4d3e
-    frame_color    := #2a6f5c
-    title_bg_color := #1b4d3e
-    body_bg_color  := #0d1f1a
-    bad_bg_color   := color.new(#f23645, 30)
-    bg_color       := #0d1f1a
+    stop1_bg_color := color.new(colorStopsStag, 90)
+    stop2_bg_color := color.new(colorStopsStag, 90)
+    stop3_bg_color := color.new(colorStops, 90)
+else if tableTheme == "GitHub Light"
+    txt_color      := #24292f
+    border_color   := #d0d7de
+    frame_color    := #0969da
+    title_bg_color := #f6f8fa
+    body_bg_color  := #ffffff
+    bad_bg_color   := color.new(#cf222e, 35)
+    bg_color       := #ffffff
+    stop1_bg_color := color.new(#af5b00, 90) // GitHub Light Orange tint
+    stop2_bg_color := color.new(#af5b00, 90)
+    stop3_bg_color := color.new(#cf222e, 90) // GitHub Light Red tint
+else if tableTheme == "Atom One Light"
+    txt_color      := #383a42
+    border_color   := #e5e5e6
+    frame_color    := #4078f2
+    title_bg_color := #f0f0f1
+    body_bg_color  := #fafafa
+    bad_bg_color   := color.new(#e45649, 35)
+    bg_color       := #fafafa
+    stop1_bg_color := color.new(#d19a66, 85) // One Light Orange tint
+    stop2_bg_color := color.new(#d19a66, 85)
+    stop3_bg_color := color.new(#e45649, 85) // One Light Red tint
+else if tableTheme == "One Dark Pro"
+    txt_color      := #abb2bf
+    border_color   := #3e4452
+    frame_color    := #61afef
+    title_bg_color := #21252b
+    body_bg_color  := #2c313c
+    bad_bg_color   := color.new(#e06c75, 30)
+    bg_color       := #282c34
+    stop1_bg_color := color.new(#d19a66, 80) // One Dark Orange tint
+    stop2_bg_color := color.new(#d19a66, 80)
+    stop3_bg_color := color.new(#e06c75, 80) // One Dark Red tint
+else if tableTheme == "Dracula"
+    txt_color      := #f8f8f2
+    border_color   := #44475a
+    frame_color    := #bd93f9
+    title_bg_color := #1e1f29
+    body_bg_color  := #282a36
+    bad_bg_color   := color.new(#ff5555, 30)
+    bg_color       := #282a36
+    stop1_bg_color := color.new(#ffb86c, 80) // Dracula Orange tint
+    stop2_bg_color := color.new(#ffb86c, 80)
+    stop3_bg_color := color.new(#ff5555, 80) // Dracula Red tint
 else // "Custom Theme" or "Custom"
     txt_color      := custom_text
     border_color   := custom_border
@@ -96,6 +122,9 @@ else // "Custom Theme" or "Custom"
     body_bg_color  := custom_header_bg
     bad_bg_color   := color.new(color.red, 40)
     bg_color       := custom_bg
+    stop1_bg_color := color.new(colorStopsStag, 90)
+    stop2_bg_color := color.new(colorStopsStag, 90)
+    stop3_bg_color := color.new(colorStops, 90)
 
 // Map back to table variables
 color_text     = txt_color
@@ -105,6 +134,9 @@ color_title_bg = title_bg_color
 color_body_bg  = body_bg_color
 color_bad_bg   = bad_bg_color
 color_bg       = bg_color
+color_stop1_bg = stop1_bg_color
+color_stop2_bg = stop2_bg_color
+color_stop3_bg = stop3_bg_color
 frame_width    = 2
 border_width   = 1
 
@@ -399,21 +431,21 @@ if showDashboard and barstate.islast
         cell(hudTable, 3, 1, "Description", color_body_bg, color_text, txtSize, text.format_bold)
         
         // Row 2: Stop Level 1 (colored same as Stop 1 fill level)
-        colorStop1Row = color.new(colorStopsStag, 90)
+        colorStop1Row = color_stop1_bg
         cell(hudTable, 0, 2, "Stop 1 (33%)", colorStop1Row, color_text, txtSize)
         cell(hudTable, 1, 2, formatPrice(stop1Price), colorStop1Row, color_text, txtSize)
         cell(hudTable, 2, 2, formatQty(q1), colorStop1Row, color_text, txtSize)
         cell(hudTable, 3, 2, "Staggered Stop Level 1.", colorStop1Row, color_text, txtSize)
         
         // Row 3: Stop Level 2 (colored same as Stop 2 fill level)
-        colorStop2Row = color.new(colorStopsStag, 90)
+        colorStop2Row = color_stop2_bg
         cell(hudTable, 0, 3, "Stop 2 (66%)", colorStop2Row, color_text, txtSize)
         cell(hudTable, 1, 3, formatPrice(stop2Price), colorStop2Row, color_text, txtSize)
         cell(hudTable, 2, 3, formatQty(q2), colorStop2Row, color_text, txtSize)
         cell(hudTable, 3, 3, "Staggered Stop Level 2.", colorStop2Row, color_text, txtSize)
         
         // Row 4: Stop Level 3 (colored same as Stop 3 fill level)
-        colorStop3Row = color.new(colorStops, 90)
+        colorStop3Row = color_stop3_bg
         cell(hudTable, 0, 4, "Stop 3 (100%)", colorStop3Row, color_text, txtSize)
         cell(hudTable, 1, 4, formatPrice(stop3Price), colorStop3Row, color_text, txtSize)
         cell(hudTable, 2, 4, formatQty(q3), colorStop3Row, color_text, txtSize)
