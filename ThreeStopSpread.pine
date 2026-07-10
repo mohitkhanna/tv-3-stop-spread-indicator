@@ -435,21 +435,21 @@ if showDashboard and barstate.islast
         cell(hudTable, 0, 2, "Stop 1 (33%)", colorStop1Row, color_text, txtSize)
         cell(hudTable, 1, 2, formatPrice(stop1Price), colorStop1Row, color_text, txtSize)
         cell(hudTable, 2, 2, formatQty(q1), colorStop1Row, color_text, txtSize)
-        cell(hudTable, 3, 2, "Staggered Stop Level 1.", colorStop1Row, color_text, txtSize)
+        cell(hudTable, 3, 2, "Scale out 1/3 of position. Dampen exposure early.", colorStop1Row, color_text, txtSize)
         
         // Row 3: Stop Level 2 (colored same as Stop 2 fill level)
         colorStop2Row = color_stop2_bg
         cell(hudTable, 0, 3, "Stop 2 (66%)", colorStop2Row, color_text, txtSize)
         cell(hudTable, 1, 3, formatPrice(stop2Price), colorStop2Row, color_text, txtSize)
         cell(hudTable, 2, 3, formatQty(q2), colorStop2Row, color_text, txtSize)
-        cell(hudTable, 3, 3, "Staggered Stop Level 2.", colorStop2Row, color_text, txtSize)
+        cell(hudTable, 3, 3, "Scale out next 1/3 of position. Limits exposure on deeper pullback.", colorStop2Row, color_text, txtSize)
         
         // Row 4: Stop Level 3 (colored same as Stop 3 fill level)
         colorStop3Row = color_stop3_bg
         cell(hudTable, 0, 4, "Stop 3 (100%)", colorStop3Row, color_text, txtSize)
         cell(hudTable, 1, 4, formatPrice(stop3Price), colorStop3Row, color_text, txtSize)
         cell(hudTable, 2, 4, formatQty(q3), colorStop3Row, color_text, txtSize)
-        cell(hudTable, 3, 4, "Final Stop Level 3 (LoD/HiD).", colorStop3Row, color_text, txtSize)
+        cell(hudTable, 3, 4, "Hard Stop: Exit final 1/3 of position. Structural invalidation.", colorStop3Row, color_text, txtSize)
         
         // Row 5: Risk Summary
         float r = na(entryPriceVal) or na(finalStopPriceVal) ? 0.0 : math.abs(entryPriceVal - finalStopPriceVal)
