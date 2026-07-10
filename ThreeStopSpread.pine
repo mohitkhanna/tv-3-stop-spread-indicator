@@ -6,46 +6,46 @@ indicator("TradingView 3-Stop Spread Indicator", overlay=true, max_labels_count=
 // ==========================================
 // Group: Trade Settings
 G_TRADE = "Trade Configuration"
-tradeDirection   = input.string("Long", "Direction", options=["Long", "Short"], group=G_TRADE, inline="Trade Info")
-positionSize     = input.float(3.0, "Size (Shares)", minval=0.0, group=G_TRADE, inline="Trade Info")
-useManualDate    = input.bool(false, "Use Manual Entry Date & Time", group=G_TRADE)
-entryTime        = input.time(timestamp("2026-07-10 00:00"), "Manual Entry Date & Time", group=G_TRADE)
-entryPriceSource = input.string("Close", "Entry Price Source", options=["Close", "Open", "Breakout (High / Low)", "Pullback (Low / High)"], group=G_TRADE, inline="Entry Price")
-manualEntryPrice = input.float(0.0, "Manual Override", minval=0.0, group=G_TRADE, inline="Entry Price")
-stopPriceSource  = input.string("Day Low / High", "Stop Price Source", options=["Day Low / High", "Entry Bar Low / High", "Previous Bar Low / High", "Swing Low / High", "Moving Average"], group=G_TRADE, inline="Stop Price")
-manualStopPrice  = input.float(0.0, "Manual Override", minval=0.0, group=G_TRADE, inline="Stop Price")
+tradeDirection   = input.string("Long (Buy)", "Trade Type", options=["Long (Buy)", "Short (Sell)"], group=G_TRADE)
+positionSize     = input.float(3.0, "Position Size (Shares)", minval=0.0, group=G_TRADE)
 allowFractional  = input.bool(false, "Allow Fractional Shares", group=G_TRADE)
+useManualDate    = input.bool(false, "Use Manual Entry Date & Time", group=G_TRADE)
+entryTime        = input.time(timestamp("2026-07-10 00:00"), "Manual Entry Date & Time", group=G_TRADE, tooltip="Configure the manual entry time. Active only if 'Use Manual Entry Date & Time' is checked.")
+entryPriceLevel  = input.string("Close", "Entry Price Level", options=["Close", "Open", "Breakout (High/Low)", "Pullback (Low/High)"], group=G_TRADE, tooltip="Close: Close price of the entry bar.\nOpen: Open price of the entry bar.\nBreakout: Entry bar High (Long) / Low (Short).\nPullback: Entry bar Low (Long) / High (Short).")
+manualEntryPrice = input.float(0.0, "Manual Entry Price Override", minval=0.0, group=G_TRADE, tooltip="If set to greater than 0, this manual price overrides the Entry Price Level setting.")
+stopPriceLevel   = input.string("Session Low/High", "Stop Loss Price Level", options=["Session Low/High", "Entry Bar Low/High", "Prev Bar Low/High", "Swing Low/High", "Moving Average"], group=G_TRADE)
+manualStopPrice  = input.float(0.0, "Manual Stop Loss Override", minval=0.0, group=G_TRADE, tooltip="If set to greater than 0, this manual price overrides the Stop Loss Price Level setting.")
 
-// Group: Moving Average and Swing Config
-G_MA             = "Moving Average and Swing Config"
-maType           = input.string("SMA", "MA Type", options=["SMA", "EMA"], group=G_MA, inline="MA Config")
-maLength         = input.int(20, "MA Length", minval=1, group=G_MA, inline="MA Config")
-swingLength      = input.int(10, "Swing Length", minval=1, group=G_MA)
+// Group: Moving Average & Swing Configuration
+G_MA             = "Moving Average & Swing Configuration"
+maType           = input.string("SMA", "Moving Average Type", options=["SMA", "EMA"], group=G_MA, tooltip="SMA: Simple Moving Average.\nEMA: Exponential Moving Average.")
+maLength         = input.int(20, "Moving Average Length", minval=1, group=G_MA)
+swingLookbackPeriod = input.int(10, "Swing Lookback Period", minval=1, group=G_MA, tooltip="Lookback length (in bars) used to calculate the Swing Low / High Stop Loss level.")
 
-// Group: Dashboard & UI
-G_UI = "Dashboard & UI"
-showDashboard    = input.bool(true, "Show Dashboard Table", group=G_UI)
-dashboardPosStr  = input.string("Bottom Left", "Dashboard Position", options=["Top Left", "Top Center", "Top Right", "Middle Left", "Middle Center", "Middle Right", "Bottom Left", "Bottom Center", "Bottom Right"], group=G_UI, inline="Table Layout")
-tableTextSizeStr = input.string("Normal", "Table Text Size", options=["Auto", "Tiny", "Small", "Normal", "Large", "Huge"], group=G_UI, inline="Table Layout")
-tableTheme       = input.string("Aqua Gold", "Dashboard Theme", options=["Aqua Gold", "Dark Charcoal", "Classic Navy", "Emerald Terminal", "Custom"], group=G_UI)
+// Group: Dashboard & UI Layout
+G_UI = "Dashboard & UI Layout"
+showDashboard    = input.bool(true, "Display Dashboard Widget", group=G_UI)
+dashboardPosStr  = input.string("Bottom Left", "Widget Position", options=["Top Left", "Top Center", "Top Right", "Middle Left", "Middle Center", "Middle Right", "Bottom Left", "Bottom Center", "Bottom Right"], group=G_UI)
+tableTextSizeStr = input.string("Normal", "Widget Font Size", options=["Auto", "Tiny", "Small", "Normal", "Large", "Huge"], group=G_UI)
+tableTheme       = input.string("Aqua Gold (Default)", "Dashboard Color Theme", options=["Aqua Gold (Default)", "Dark Charcoal", "Classic Navy", "Emerald Terminal", "Custom Theme"], group=G_UI)
 
-// Custom Theme Colors (Only used if Theme is "Custom")
-custom_text      = input.color(color.black, "Text", group=G_UI, inline="Custom Colors 1")
-custom_bg        = input.color(color.white, "Background", group=G_UI, inline="Custom Colors 1")
-custom_border    = input.color(#363a45, "Border", group=G_UI, inline="Custom Colors 2")
-custom_frame     = input.color(color.new(color.blue, 0), "Frame", group=G_UI, inline="Custom Colors 2")
-custom_title_bg  = input.color(color.new(color.yellow, 75), "Title BG", group=G_UI, inline="Custom Colors 3")
-custom_header_bg = input.color(color.new(color.aqua, 85), "Header BG", group=G_UI, inline="Custom Colors 3")
+// Custom Theme Colors (Only used if Theme is "Custom Theme")
+custom_text      = input.color(color.black, "Text Color", group=G_UI, inline="Custom 1")
+custom_bg        = input.color(color.white, "Background Color", group=G_UI, inline="Custom 1")
+custom_border    = input.color(#363a45, "Border Color", group=G_UI, inline="Custom 2")
+custom_frame     = input.color(color.new(color.blue, 0), "Frame Color", group=G_UI, inline="Custom 2")
+custom_title_bg  = input.color(color.new(color.yellow, 75), "Title Row BG", group=G_UI, inline="Custom 3")
+custom_header_bg = input.color(color.new(color.aqua, 85), "Header Row BG", group=G_UI, inline="Custom 3")
 
-// Group: Chart Drawings Styling
-G_DRAW            = "Chart Drawings Styling"
-colorEntry        = input.color(color.blue, "Entry Line", group=G_DRAW, inline="Line Colors")
-colorStopsStag    = input.color(color.orange, "Staggered Stops", group=G_DRAW, inline="Line Colors")
-colorStops        = input.color(color.red, "Final Stop", group=G_DRAW, inline="Line Colors")
+// Group: Chart Level Visuals
+G_DRAW            = "Chart Level Visuals"
+colorEntry        = input.color(color.blue, "Entry Level Color", group=G_DRAW, inline="Line Colors")
+colorStopsStag    = input.color(color.orange, "Staggered Stops Color", group=G_DRAW, inline="Line Colors")
+colorStops        = input.color(color.red, "Final Stop Color", group=G_DRAW, inline="Line Colors")
 lineWidthEntry    = input.int(2, "Entry Line Width", minval=1, group=G_DRAW, inline="Line Widths")
-lineWidthStops    = input.int(2, "Stops Line Width", minval=1, group=G_DRAW, inline="Line Widths")
-labelSpacing      = input.int(1, "Label Spacing (Bars)", minval=0, group=G_DRAW, inline="SpacingStyle")
-lineStyleStr      = input.string("Dotted", "Line Style", options=["Solid", "Dotted", "Dashed"], group=G_DRAW, inline="SpacingStyle")
+lineWidthStops    = input.int(2, "Stop Lines Width", minval=1, group=G_DRAW, inline="Line Widths")
+lineStyleStr      = input.string("Dotted", "Level Line Style", options=["Solid", "Dotted", "Dashed"], group=G_DRAW)
+labelSpacing      = input.int(1, "Label Offset (Bars)", minval=0, group=G_DRAW)
 
 // Theme Color Resolution
 color txt_color = na
@@ -56,7 +56,7 @@ color body_bg_color = na
 color bad_bg_color = na
 color bg_color = na
 
-if tableTheme == "Aqua Gold"
+if tableTheme == "Aqua Gold (Default)" or tableTheme == "Aqua Gold"
     txt_color      := color.black
     border_color   := #363a45
     frame_color    := color.new(color.blue, 0)
@@ -88,7 +88,7 @@ else if tableTheme == "Emerald Terminal"
     body_bg_color  := #0d1f1a
     bad_bg_color   := color.new(#f23645, 30)
     bg_color       := #0d1f1a
-else // "Custom"
+else // "Custom Theme" or "Custom"
     txt_color      := custom_text
     border_color   := custom_border
     frame_color    := custom_frame
@@ -111,12 +111,12 @@ border_width   = 1
 // ==========================================
 // --- HELPERS & CALCULATION SAFETY ---
 // ==========================================
-isLong = (tradeDirection == "Long")
+isLong = (tradeDirection == "Long" or tradeDirection == "Long (Buy)")
 
 // Calculate moving average and swing values globally
-maValue = maType == "SMA" ? ta.sma(close, maLength) : ta.ema(close, maLength)
-swingLowGlobal = ta.lowest(low, swingLength)
-swingHighGlobal = ta.highest(high, swingLength)
+maValue = (maType == "SMA (Simple Moving Average)" or maType == "SMA") ? ta.sma(close, maLength) : ta.ema(close, maLength)
+swingLowGlobal = ta.lowest(low, swingLookbackPeriod)
+swingHighGlobal = ta.highest(high, swingLookbackPeriod)
 
 // ==========================================
 // --- LEVEL EXTRACTION & STOPS MATH ---
@@ -147,21 +147,32 @@ if isThisEntry
     if manualEntryPrice > 0.0
         entryPriceVal := manualEntryPrice
     else
-        entryPriceVal := switch entryPriceSource
-            "Close"                 => close
-            "Open"                  => open
-            "Breakout (High / Low)" => isLong ? high : low
-            "Pullback (Low / High)" => isLong ? low : high
+        entryPriceVal := switch entryPriceLevel
+            "Close of Entry Bar"            => close
+            "Close"                         => close
+            "Open of Entry Bar"             => open
+            "Open"                          => open
+            "Breakout (Entry Bar High/Low)" => isLong ? high : low
+            "Breakout (High / Low)"         => isLong ? high : low
+            "Breakout (High/Low)"           => isLong ? high : low
+            "Pullback (Entry Bar Low/High)" => isLong ? low : high
+            "Pullback (Low / High)"         => isLong ? low : high
+            "Pullback (Low/High)"           => isLong ? low : high
             => close
         
     if manualStopPrice > 0.0
         finalStopPriceVal := manualStopPrice
     else
-        finalStopPriceVal := switch stopPriceSource
-            "Entry Bar Low / High"    => isLong ? low : high
-            "Previous Bar Low / High" => isLong ? nz(low[1], low) : nz(high[1], high)
-            "Swing Low / High"        => isLong ? nz(swingLowGlobal, low) : nz(swingHighGlobal, high)
-            "Moving Average"          => nz(maValue, close)
+        finalStopPriceVal := switch stopPriceLevel
+            "Entry Bar Low/High"            => isLong ? low : high
+            "Entry Bar Low / High"          => isLong ? low : high
+            "Prev Bar Low/High"             => isLong ? nz(low[1], low) : nz(high[1], high)
+            "Previous Bar Low / High"       => isLong ? nz(low[1], low) : nz(high[1], high)
+            "Swing Low/High"                => isLong ? nz(swingLowGlobal, low) : nz(swingHighGlobal, high)
+            "Recent Swing Low / High"       => isLong ? nz(swingLowGlobal, low) : nz(swingHighGlobal, high)
+            "Swing Low / High"              => isLong ? nz(swingLowGlobal, low) : nz(swingHighGlobal, high)
+            "Moving Average"                => nz(maValue, close)
+            "Moving Average Value"          => nz(maValue, close)
             => isLong ? low : high
         
     entryDayTime := timeD
@@ -176,7 +187,7 @@ if not na(entryDayTime) and timeD == entryDayTime
 // Calculate stops on the last bar
 if barstate.islast and not na(entryBarIdx)
     // Update Low of Day if selected and not overridden
-    if stopPriceSource == "Day Low / High" and not (manualStopPrice > 0.0)
+    if (stopPriceLevel == "Session Low/High" or stopPriceLevel == "Session Low / High" or stopPriceLevel == "Day Low / High") and not (manualStopPrice > 0.0)
         finalStopPriceVal := isLong ? entryDayLow : entryDayHigh
         
     float r = math.max(0.000001, math.abs(entryPriceVal - finalStopPriceVal))
@@ -373,11 +384,12 @@ if showDashboard and barstate.islast
         table.cell(hudTable, 0, 0, errorMsg, bgcolor=color_bad_bg, text_color=color.white, text_size=txtSize, text_halign=text.align_center)
     else
         // Row 0: Trade Status Summary Bar (using header row background color and bold text)
+        tradeTypeStr = isLong ? "Long" : "Short"
         daysElapsedStr = "Days Elapsed: " + str.tostring(daysActive)
-        cell(hudTable, 0, 0, syminfo.ticker + " (" + tradeDirection + ")", color_title_bg, color_text, txtSize, text.format_bold)
+        cell(hudTable, 0, 0, syminfo.ticker + " (" + tradeTypeStr + ")", color_title_bg, color_text, txtSize, text.format_bold)
         cell(hudTable, 1, 0, "Entry: " + formatEntryDate(entryDayTime), color_title_bg, color_text, txtSize, text.format_bold)
         cell(hudTable, 2, 0, daysElapsedStr, color_title_bg, color_text, txtSize, text.format_bold)
-        slSourceStr = manualStopPrice > 0.0 ? "Manual Override" : stopPriceSource
+        slSourceStr = manualStopPrice > 0.0 ? "Manual Override" : (stopPriceLevel == "Session Low / High" ? "Session Low/High" : (stopPriceLevel == "Moving Average Value" ? "Moving Average" : stopPriceLevel))
         cell(hudTable, 3, 0, "SL Source: " + slSourceStr, color_title_bg, color_text, txtSize, text.format_bold)
         
         // Row 1: Column Headers (using regular body row background color and bold text)
